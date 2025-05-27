@@ -62,6 +62,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: terraform
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -73,7 +74,6 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-        tf_actions_working_dir: 'terraform'
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
