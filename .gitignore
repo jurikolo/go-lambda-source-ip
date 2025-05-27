@@ -23,3 +23,9 @@ go.work.sum
 
 # env file
 .env
+
+# Terraform
+.terraform
+
+# Compiled project files
+source-ip/source-ip
