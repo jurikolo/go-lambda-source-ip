@@ -25,9 +25,6 @@ jobs:
       with:
         go-version: ${{ env.GO_VERSION }}
 
-    # - name: Build
-      # run: go build -v ./...
-
     - name: Build
       run: make build-source-ip
 
@@ -53,9 +50,13 @@ jobs:
       run: |
         # Extract version from tag
         VERSION=${GITHUB_REF#refs/tags/}
+
+        cd source-ip
         
         # Build the binary with version info
-        go build -ldflags="-s -w -X main.version=${VERSION}" -o source-ip-linux-amd64 ./...
+        go build -ldflags="-s -w -X main.version=${VERSION}" -o ../source-ip-linux-amd64 .
+
+        cd ..
         
         # Make it executable
         chmod +x source-ip-linux-amd64
