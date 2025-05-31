@@ -75,6 +75,7 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
+    needs: build-and-release
 
     permissions:
       contents: read
