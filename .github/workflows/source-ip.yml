@@ -48,7 +48,7 @@ jobs:
         CGO_ENABLED: 0
       run: |
         # Extract version from tag
-        VERSION=${GITHUB_REF#refs/tags/}
+        VERSION=${GITHUB_REF#refs/heads/feature/source-ip}
 
         cd source-ip 
         go build -ldflags="-s -w -X main.version=${VERSION}" -o ../source-ip-linux-arm64 .
