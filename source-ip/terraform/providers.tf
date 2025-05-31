@@ -10,7 +10,7 @@ terraform {
     organization = "jurikolo"
 
     workspaces {
-      name = "github-go-utils"
+      name = "github-go-utils-source-ip"
     }
   }
 }
