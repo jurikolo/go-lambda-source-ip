@@ -12,70 +12,70 @@ on:
 
 jobs:
 
-  # Build and test the project
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+  # # Build and test the project
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
+  #   - name: Set up Go
+  #     uses: actions/setup-go@v4
+  #     with:
+  #       go-version: ${{ env.GO_VERSION }}
 
-    - name: Build
-      run: make build-source-ip
+  #   - name: Build
+  #     run: make build-source-ip
 
-  # Build and deploy the project to GitHub releases
-  build-and-release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')  # Only run on version tags
-    needs: build
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@v4
+  # # Build and deploy the project to GitHub releases
+  # build-and-release:
+  #   runs-on: ubuntu-latest
+  #   if: startsWith(github.ref, 'refs/tags/v')  # Only run on version tags
+  #   needs: build
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
+  #   - name: Set up Go
+  #     uses: actions/setup-go@v4
+  #     with:
+  #       go-version: ${{ env.GO_VERSION }}
 
-    - name: Build Linux ARM64 binary
-      env:
-        GOOS: linux
-        GOARCH: arm64
-        CGO_ENABLED: 0
-      run: |
-        # Extract version from tag
-        VERSION=${GITHUB_REF#refs/tags/}
+  #   - name: Build Linux ARM64 binary
+  #     env:
+  #       GOOS: linux
+  #       GOARCH: arm64
+  #       CGO_ENABLED: 0
+  #     run: |
+  #       # Extract version from tag
+  #       VERSION=${GITHUB_REF#refs/tags/}
 
-        cd source-ip 
-        go build -ldflags="-s -w -X main.version=${VERSION}" -o ../source-ip-linux-arm64 .
-        cd ..
-        chmod +x source-ip-linux-arm64
-        zip source-ip-${VERSION}-linux-arm64.zip source-ip-linux-arm64
-        sha256sum source-ip-linux-arm64 > source-ip-${VERSION}-linux-arm64.sha256
-        sha256sum source-ip-${VERSION}-linux-arm64.zip >> source-ip-${VERSION}-linux-arm64.sha256
+  #       cd source-ip 
+  #       go build -ldflags="-s -w -X main.version=${VERSION}" -o ../source-ip-linux-arm64 .
+  #       cd ..
+  #       chmod +x source-ip-linux-arm64
+  #       zip source-ip-${VERSION}-linux-arm64.zip source-ip-linux-arm64
+  #       sha256sum source-ip-linux-arm64 > source-ip-${VERSION}-linux-arm64.sha256
+  #       sha256sum source-ip-${VERSION}-linux-arm64.zip >> source-ip-${VERSION}-linux-arm64.sha256
 
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          source-ip-linux-arm64
-          source-ip-*-linux-arm64.zip
-          source-ip-*-linux-arm64.sha256
-        generate_release_notes: true
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   - name: Create Release
+  #     uses: softprops/action-gh-release@v1
+  #     with:
+  #       files: |
+  #         source-ip-linux-arm64
+  #         source-ip-*-linux-arm64.zip
+  #         source-ip-*-linux-arm64.sha256
+  #       generate_release_notes: true
+  #       draft: false
+  #       prerelease: false
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
-    needs: build-and-release
+    # needs: build-and-release
 
     permissions:
       contents: read

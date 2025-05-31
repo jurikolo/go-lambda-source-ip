@@ -76,7 +76,7 @@ resource "null_resource" "download_github_release" {
 resource "aws_lambda_function" "source_ip_lambda" {
   filename         = "./downloads/${local.zip_filename}"
   function_name    = "myLambdaFunction"
-  role             = aws_iam_role.lambda_role.arn
+  role             = aws_iam_role.source_ip_lambda_role.arn
   handler          = "index.handler"
   runtime          = "al2023"
   source_code_hash = filebase64sha256("./downloads/${local.zip_filename}")
