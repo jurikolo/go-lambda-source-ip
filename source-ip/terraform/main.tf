@@ -78,7 +78,7 @@ resource "aws_lambda_function" "source_ip_lambda" {
   function_name    = "myLambdaFunction"
   role             = aws_iam_role.source_ip_lambda_role.arn
   handler          = "index.handler"
-  runtime          = "al2023"
+  runtime          = "provided.al2023"
   source_code_hash = filebase64sha256("./downloads/${local.zip_filename}")
   timeout          = 5
 }
