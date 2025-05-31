@@ -13,9 +13,9 @@ resource "aws_api_gateway_resource" "source_ip" {
 }
 
 resource "aws_api_gateway_method" "source_ip_proxy" {
-  rest_api_id = aws_api_gateway_rest_api.go_utils_api.id
-  resource_id = aws_api_gateway_resource.source_ip.id
-  http_method = "GET"
+  rest_api_id   = aws_api_gateway_rest_api.go_utils_api.id
+  resource_id   = aws_api_gateway_resource.source_ip.id
+  http_method   = "GET"
   authorization = "NONE"
 }
 
@@ -54,7 +54,7 @@ resource "aws_api_gateway_deployment" "source_ip_deployment" {
 
 data "http" "github_latest_release" {
   url = "https://api.github.com/repos/${var.github_repo}/releases/latest"
-  
+
   request_headers = {
     Accept = "application/vnd.github.v3+json"
   }
@@ -74,13 +74,13 @@ resource "null_resource" "download_github_release" {
 }
 
 resource "aws_lambda_function" "source_ip_lambda" {
-  filename = "./downloads/${local.zip_filename}"
-  function_name = "myLambdaFunction"
-  role = aws_iam_role.lambda_role.arn
-  handler = "index.handler"
-  runtime = "al2023"
+  filename         = "./downloads/${local.zip_filename}"
+  function_name    = "myLambdaFunction"
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "index.handler"
+  runtime          = "al2023"
   source_code_hash = filebase64sha256("./downloads/${local.zip_filename}")
-  timeout = 5
+  timeout          = 5
 }
 
 resource "aws_iam_role" "source_ip_lambda_role" {
@@ -88,35 +88,35 @@ resource "aws_iam_role" "source_ip_lambda_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
-    {
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
       }
-    }
-  ]
-})
+    ]
+  })
 }
 
 resource "aws_api_gateway_integration" "source_ip_lambda_integration" {
-  rest_api_id = aws_api_gateway_rest_api.go_utils_api.id
-  resource_id = aws_api_gateway_resource.source_ip.id
-  http_method = aws_api_gateway_method.source_ip_proxy.http_method
+  rest_api_id             = aws_api_gateway_rest_api.go_utils_api.id
+  resource_id             = aws_api_gateway_resource.source_ip.id
+  http_method             = aws_api_gateway_method.source_ip_proxy.http_method
   integration_http_method = "GET"
-  type = "AWS"
-  uri = aws_lambda_function.source_ip_lambda.invoke_arn
+  type                    = "AWS"
+  uri                     = aws_lambda_function.source_ip_lambda.invoke_arn
 }
 
 resource "aws_iam_role_policy_attachment" "source_ip_lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  role = aws_iam_role.source_ip_lambda_role.name
+  role       = aws_iam_role.source_ip_lambda_role.name
 }
 
 resource "aws_lambda_permission" "source_ip_apigw_lambda" {
-  statement_id = "AllowExecutionFromAPIGateway"
-  action = "lambda:InvokeFunction"
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.source_ip_lambda.function_name
-  principal = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_rest_api.go_utils_api.execution_arn}/*/*/*"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.go_utils_api.execution_arn}/*/*/*"
 }
