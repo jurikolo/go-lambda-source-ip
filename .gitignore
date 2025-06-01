@@ -26,6 +26,11 @@ go.work.sum
 
 # Terraform
 .terraform
+.terraform.lock.hcl
 
 # Compiled project files
-source-ip/source-ip
+bootstrap
+
+# Other
+*.zip
+*.tar.gz

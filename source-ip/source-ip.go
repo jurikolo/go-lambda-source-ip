@@ -1,32 +1,29 @@
 package main
 
 import (
-	"log"
+	"context"
 	"net/http"
-	"os"
-	"time"
 
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 )
+
+var ginLambda *ginadapter.GinLambda
+
+func init() {
+	// Initialize the Gin router
+	router := NewRouter()
+	ginLambda = ginadapter.New(router)
+}
 
 func NewRouter() *gin.Engine {
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
-	// expectedHost := "localhost:8080"
 
 	// Setup Security Headers
 	router.Use(func(c *gin.Context) {
-		// if c.Request.Host != expectedHost {
-			// c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid host header"})
-			// return
-		// }
-		c.Header("X-Frame-Options", "DENY")
-		c.Header("Content-Security-Policy", "default-src 'self'; connect-src *; font-src *; script-src-elem * 'unsafe-inline'; img-src * data:; style-src * 'unsafe-inline';")
-		c.Header("X-XSS-Protection", "1; mode=block")
-		c.Header("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
-		c.Header("Referrer-Policy", "strict-origin")
-		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("Permissions-Policy", "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()")
 		c.Next()
 	})
 
@@ -40,25 +37,11 @@ func NewRouter() *gin.Engine {
 	return router
 }
 
+func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// If no name is provided in the HTTP request body, throw an error
+	return ginLambda.ProxyWithContext(ctx, req)
+}
+
 func main() {
-
-	httpPort := os.Getenv("API_PORT")
-	if httpPort == "" {
-		httpPort = "8080"
-	}
-
-	// Initialize router
-	router := NewRouter()
-
-	// Create server with timeout
-	srv := &http.Server{
-		Addr:    ":" + httpPort,
-		Handler: router,
-		// set timeout due CWE-400 - Potential Slowloris Attack
-		ReadHeaderTimeout: 5 * time.Second,
-	}
-
-	if err := srv.ListenAndServe(); err != nil {
-		log.Printf("Failed to start server: %v", err)
-	}
+	lambda.Start(Handler)
 }
