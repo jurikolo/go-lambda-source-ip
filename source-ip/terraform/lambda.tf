@@ -39,17 +39,9 @@ resource "aws_lambda_function" "go_utils_lambda" {
   role             = aws_iam_role.go_utils_lambda_role.arn
   handler          = "index.handler"
   runtime          = "provided.al2023"
+  architectures    = ["arm64"]
   source_code_hash = base64sha256(data.external.download_github_release.result.hash)
   timeout          = 5
-}
-
-resource "aws_api_gateway_integration" "go_utils_lambda_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.go_utils_api.id
-  resource_id             = aws_api_gateway_resource.go_utils.id
-  http_method             = aws_api_gateway_method.go_utils_proxy.http_method
-  integration_http_method = "GET"
-  type                    = "AWS"
-  uri                     = aws_lambda_function.go_utils_lambda.invoke_arn
 }
 
 resource "aws_lambda_permission" "go_utils_apigw_lambda" {
@@ -57,5 +49,5 @@ resource "aws_lambda_permission" "go_utils_apigw_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.go_utils_lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.go_utils_api.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.go_utils_api.execution_arn}/*/*"
 }

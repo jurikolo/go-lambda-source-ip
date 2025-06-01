@@ -36,6 +36,15 @@ resource "aws_api_gateway_method_response" "go_utils_proxy" {
   status_code = "200"
 }
 
+resource "aws_api_gateway_integration" "go_utils_lambda_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.go_utils_api.id
+  resource_id             = aws_api_gateway_resource.go_utils.id
+  http_method             = aws_api_gateway_method.go_utils_proxy.http_method
+  integration_http_method = "POST" // Lambda only accepts POST HTTP method
+  type                    = "AWS"
+  uri                     = aws_lambda_function.go_utils_lambda.invoke_arn
+}
+
 resource "aws_api_gateway_integration_response" "go_utils_proxy" {
   rest_api_id = aws_api_gateway_rest_api.go_utils_api.id
   resource_id = aws_api_gateway_resource.go_utils.id
