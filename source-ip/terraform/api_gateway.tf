@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "go_utils_api" {
-  name        = var.name
+  name = var.name
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -7,10 +7,10 @@ resource "aws_api_gateway_rest_api" "go_utils_api" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
-        Action = "execute-api:Invoke"
-        Resource = "*"
+        Action    = "execute-api:Invoke"
+        Resource  = "*"
       }
     ]
   })

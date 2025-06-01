@@ -24,7 +24,7 @@ data "external" "download_github_release" {
     fi
 EOT
   ]
-  
+
   # Trigger re-download when the tag changes
   query = {
     download_url = local.download_url
