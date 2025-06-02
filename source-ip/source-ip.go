@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -28,9 +29,9 @@ func NewRouter() *gin.Engine {
 	})
 
 	// Setup route group for the API
-	router.GET("/", func(c *gin.Context) {
+	router.POST("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"clientIP": c.ClientIP(),
+			"sourceIp": c.PostForm("sourceIp"),
 		})
 	})
 
@@ -38,7 +39,8 @@ func NewRouter() *gin.Engine {
 }
 
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// If no name is provided in the HTTP request body, throw an error
+	log.Printf("Request headers: %s", req.Headers)
+	log.Printf("Request body: %s", req.Body)
 	return ginLambda.ProxyWithContext(ctx, req)
 }
 
