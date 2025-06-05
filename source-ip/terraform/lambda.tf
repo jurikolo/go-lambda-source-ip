@@ -26,22 +26,23 @@ EOT
   ]
 
   # Trigger re-download when the tag changes
-  query = {
-    download_url = local.download_url
-    tag_name     = local.tag_name
-    filename     = local.zip_filename
-  }
+  # query = {
+  #   download_url = local.download_url
+  #   tag_name     = local.tag_name
+  #   filename     = local.zip_filename
+  # }
 }
 
 resource "aws_lambda_function" "go_utils_lambda" {
   filename         = data.external.download_github_release.result.filename
   function_name    = var.name
   role             = aws_iam_role.go_utils_lambda_role.arn
-  handler          = "index.handler"
+  handler          = "bootstrap"
   runtime          = "provided.al2023"
-  architectures    = ["arm64"]
   source_code_hash = base64sha256(data.external.download_github_release.result.hash)
   timeout          = 5
+  architectures    = ["arm64"]
+  # architectures = ["x86_64"]
 }
 
 resource "aws_lambda_permission" "go_utils_apigw_lambda" {
