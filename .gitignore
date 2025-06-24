@@ -23,3 +23,14 @@ go.work.sum
 
 # env file
 .env
+
+# Terraform
+.terraform
+.terraform.lock.hcl
+
+# Compiled project files
+bootstrap
+
+# Other
+*.zip
+*.tar.gz
