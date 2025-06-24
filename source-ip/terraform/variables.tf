@@ -25,3 +25,8 @@ variable "api_gateway_http_method" {
   description = "API Gateway HTTP method"
   type        = string
 }
+
+variable "route53_zone_name" {
+  description = "The Route53 hosted zone name (e.g., example.com)"
+  type        = string
+}

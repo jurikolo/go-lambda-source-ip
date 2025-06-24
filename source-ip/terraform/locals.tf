@@ -1,4 +1,5 @@
 locals {
+  domain_name  = "source-ip.${var.route53_zone_name}"
   release_data = jsondecode(data.http.github_latest_release.response_body)
 
   # Find the zipball_url from the release data
