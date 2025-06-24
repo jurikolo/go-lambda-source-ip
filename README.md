@@ -1,5 +1,3 @@
-# utils
-Various utils for development
+# Go (AWS) Lambda source-ip
 
-Following is the list of utilities available:
-* source ip - retrieve public ip address
+Sample Go project deployable to AWS Lambda that returns client's source IP.
